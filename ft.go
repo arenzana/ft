@@ -40,10 +40,11 @@ func main(){
 		    ShortName: "a",
 		    Usage:     "Display Airport Information",
 		    Action: func(c *cli.Context) {
+		    var inputAirport string = c.Args()[0]
 		      if _, err := os.Stat(outputFileAirports); os.IsNotExist(err) {
 				getStaticData()
 				}
-				validateAirportCode(c.Args()[0])
+				validateAirportCode(inputAirport)
 
 		    },
   		},
@@ -72,16 +73,7 @@ func main(){
 
 app.Run(os.Args)
 }
-/*
-Download data from openflights.org to not make much use of the FlightAware API ($$)
-*/
-func getStaticData() int {
-	os.MkdirAll(baseDir, 0777)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat",outputFileAirports)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat",outputFileAirlines)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat",outputFileRoutes)
-	return 0
-}
+
 /*
 Validate airport code.
 2 - Invalid code.
@@ -103,6 +95,23 @@ func validateAirportCode (airportCode string) int {
 	return airportEval
 }
 
+/*
+Some standard trivial functions to avoid repetition.
+*/
+
+/*
+Download data from openflights.org to not make much use of the FlightAware API ($$)
+*/
+func getStaticData() int {
+	os.MkdirAll(baseDir, 0777)
+	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat",outputFileAirports)
+	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat",outputFileAirlines)
+	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat",outputFileRoutes)
+	return 0
+}
+/*
+Download a file from the URL
+*/
 func downloadFromUrl(url string,fileName string) {
 
 	// TODO: check file existence first with io.IsExist

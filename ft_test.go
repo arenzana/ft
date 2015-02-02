@@ -30,6 +30,7 @@ var airportTests = []struct {
 	},
 }
 
+/*Test to make sure Airport code validation works*/
 func TestValidateAirportCode (t *testing.T) {
 	for i,test := range airportTests {
 		var actualICAO int = validateAirportCode(test.airportICAOCode)
@@ -45,3 +46,9 @@ func TestValidateAirportCode (t *testing.T) {
 	}
 }
 
+func TestGetAirportData (t *testing.T){
+	for i,test := range airportTests {
+		_,resultICAO := getAirportData(test.airportICAOCode,1)
+		_,resultIATA := getAirportData(test.airportIATACode,0)
+	}
+}
