@@ -44,6 +44,7 @@ func main() {
 			ShortName: "a",
 			Usage:     "Display Airport Information",
 			Action: func(c *cli.Context) {
+				var ai airportInformation
 				var inputAirport string = c.Args()[0]
 				if _, err := os.Stat(outputFileAirports); os.IsNotExist(err) {
 					getStaticData()
@@ -54,7 +55,10 @@ func main() {
 					os.Exit(1)
 				}
 				airportIndex := getAirportIndex(inputAirport)
-				_ = airportIndex
+				ai = getAirportData(airportIndex)
+				fmt.Println("Airport Name:",ai.airportName)
+				fmt.Print("Location    : ", ai.airportCity,", ",ai.airportCountry,"\n")
+				fmt.Println("ICAO        :", ai.airportICAOCode," IATA: ", ai.airportIATACode)
 			},
 		},
 		{
@@ -107,13 +111,75 @@ func validateAirportCode(airportCode string) int32 {
 /*
 Get basic airport info
 */
-func getAirportData(airportCode string, codeType int) airportInformation {
+func getAirportData(airportIndex int) airportInformation {
 	var airportDataResult airportInformation
+	
+	csvfile, err := os.Open(outputFileAirports)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	defer csvfile.Close()
+	reader := csv.NewReader(csvfile)
+
+	reader.FieldsPerRecord = -1
+
+	rawCSVdata, err := reader.ReadAll()
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for _, each := range rawCSVdata {
+		index, _ := strconv.Atoi(each[0])
+		if  index == airportIndex {
+			lat, _ := strconv.ParseFloat(each[6], 32)
+			lon, _ := strconv.ParseFloat(each[7], 32)
+			airportDataResult.airportName = each[1]
+			airportDataResult.airportICAOCode = each[5]
+			airportDataResult.airportIATACode = each[4]
+			airportDataResult.airportIndex = airportIndex
+			airportDataResult.airportCountry = each[3]
+			airportDataResult.airportCity = each[2]
+			airportDataResult.airportLat = lat
+			airportDataResult.airportLong = lon
+		}
+	}
+
 	return airportDataResult
+}
+/*
+Get index of an airport code so we can gather all the data by index
+*/
+func getAirportIndex(airportCode string) int {
+	csvfile, err := os.Open(outputFileAirports)
+	if err != nil {
+		fmt.Println(err)
+		return -2
+	}
+	defer csvfile.Close()
+	reader := csv.NewReader(csvfile)
+
+	reader.FieldsPerRecord = -1
+
+	rawCSVdata, err := reader.ReadAll()
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for _, each := range rawCSVdata {
+		if each[4] == airportCode || each[5] == airportCode {
+//			fmt.Printf("Airport: %s. IATA: %s, ICAO: %s, Index: %s\n", each[1], each[4], each[5], each[0])
+			index, _ := strconv.Atoi(each[0])
+			return index
+		}
+	}
+	return -2
 }
 
 /*
-Some standard trivial functions to avoid repetition.
+================== Some standard trivial functions to avoid repetition. =============================
 */
 
 /*
@@ -154,31 +220,4 @@ func downloadFromUrl(url string, fileName string) {
 		return
 	}
 	_ = bytesRead
-}
-
-func getAirportIndex(airportCode string) int {
-	csvfile, err := os.Open(outputFileAirports)
-	if err != nil {
-		fmt.Println(err)
-		return -2
-	}
-	defer csvfile.Close()
-	reader := csv.NewReader(csvfile)
-
-	reader.FieldsPerRecord = -1
-
-	rawCSVdata, err := reader.ReadAll()
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	for _, each := range rawCSVdata {
-		if each[4] == airportCode || each[5] == airportCode {
-			fmt.Printf("Airport: %s. IATA: %s, ICAO: %s\n, Index: %d", each[1], each[4], each[5], each[0])
-			index, _ := strconv.Atoi(each[0])
-			return index
-		}
-	}
-	return -2
 }

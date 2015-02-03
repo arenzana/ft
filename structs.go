@@ -4,9 +4,9 @@ type airportInformation struct {
 	airportName     string
 	airportICAOCode string
 	airportIATACode string
-	airportIndex    int32
+	airportIndex    int
 	airportCountry  string
 	airportCity     string
-	airportLat      float32
-	airportLong     float32
+	airportLat      float64
+	airportLong     float64
 }

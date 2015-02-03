@@ -76,11 +76,11 @@ func TestGetAirportIndex(t *testing.T) {
 	}
 }
 
-/*Test to get airport data
+/*Test to get airport data */
 func TestGetAirportData(t *testing.T) {
-	for i, test := range airportTests {
-		_, resultICAO := getAirportData(test.airportICAOCode, validateAirportCode(test.airportICAOCode))
-		_, resultIATA := getAirportData(test.airportIATACode, validateAirportCode(test.airportIATACode))
+	var airportInfo airportInformation
+	airportInfo = getAirportData(getAirportIndex("KJFK"))
+	if airportInfo.airportIndex != 3797 {
+		t.Error("Error! Got %d but expected 3797", airportInfo.airportIndex)
 	}
 }
-*/
