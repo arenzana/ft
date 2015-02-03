@@ -1,5 +1,7 @@
 package main
 
+import "encoding/xml"
+
 type airportInformation struct {
 	airportName     string
 	airportICAOCode string
@@ -11,9 +13,13 @@ type airportInformation struct {
 	airportLong     float64
 }
 
-/*type airportMETAR struct {
+type Metar struct {
 	airportICAOCode string
-	XMLName xml.Name `xml:"respsonse"`
-	raw_text string `xml: "response>data>METAR"`
-	elevation float32 `xml: "response>data>METAR"`
-}*/
+	raw_text string `xml "raw_text"`
+	elevation float32 `xml "elevation"`
+}
+
+type Response struct {
+	XMLName xml.Name `xml: "response"`
+	Metars []Metar `xml: "METAR"`
+}
