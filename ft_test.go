@@ -1,14 +1,14 @@
 package main
 
-import ("testing"
+import (
+	"testing"
 )
 
 var airportTests = []struct {
 	airportICAOCode string
 	airportIATACode string
-
-	}{
-	 {
+}{
+	{
 		airportICAOCode: "LEMD",
 		airportIATACode: "MAD",
 	},
@@ -30,11 +30,13 @@ var airportTests = []struct {
 	},
 }
 
-/*Test to make sure Airport code validation works*/
-func TestValidateAirportCode (t *testing.T) {
-	for i,test := range airportTests {
-		var actualICAO int = validateAirportCode(test.airportICAOCode)
-		var actualIATA int = validateAirportCode(test.airportIATACode)
+var fakeAirportTests = []string{"HEEORF", "A"}
+
+/*Test to make sure Airport code size works*/
+func TestValidateAirportCode(t *testing.T) {
+	for i, test := range airportTests {
+		var actualICAO int32 = validateAirportCode(test.airportICAOCode)
+		var actualIATA int32 = validateAirportCode(test.airportIATACode)
 
 		if actualICAO != 1 {
 			t.Error("Expected 1, got ", actualICAO, "Test %d", i)
@@ -44,11 +46,45 @@ func TestValidateAirportCode (t *testing.T) {
 		}
 
 	}
+
+	for i, ret := range fakeAirportTests {
+		res := validateAirportCode(ret)
+		if res != -2 {
+			t.Error("Expected 2, got ", res, "Test %d", i)
+		}
+	}
+
 }
 
-func TestGetAirportData (t *testing.T){
-	for i,test := range airportTests {
-		_,resultICAO := getAirportData(test.airportICAOCode,1)
-		_,resultIATA := getAirportData(test.airportIATACode,0)
+/*Test to get airport indexes*/
+
+func TestGetAirportIndex(t *testing.T) {
+	for i, test := range airportTests {
+		indexICAO := getAirportIndex(test.airportICAOCode)
+		indexIATA := getAirportIndex(test.airportIATACode)
+
+		if indexICAO == -2 || indexIATA == -2 {
+			t.Error("Error! Got ", indexICAO, "Test %d", i)
+		}
+		if indexIATA != 0 {
+			t.Error("Error! Got ", indexIATA, "Test %d", i)
+		}
+
+	}
+
+	for i, ret := range fakeAirportTests {
+		res := getAirportIndex(ret)
+		if res != -2 {
+			t.Error("Error! Got ", res, "Test %d", i)
+		}
 	}
 }
+
+/*Test to get airport data
+func TestGetAirportData(t *testing.T) {
+	for i, test := range airportTests {
+		_, resultICAO := getAirportData(test.airportICAOCode, validateAirportCode(test.airportICAOCode))
+		_, resultIATA := getAirportData(test.airportIATACode, validateAirportCode(test.airportIATACode))
+	}
+}
+*/
