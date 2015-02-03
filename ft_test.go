@@ -66,10 +66,6 @@ func TestGetAirportIndex(t *testing.T) {
 		if indexICAO == -2 || indexIATA == -2 {
 			t.Error("Error! Got ", indexICAO, "Test %d", i)
 		}
-		if indexIATA != 0 {
-			t.Error("Error! Got ", indexIATA, "Test %d", i)
-		}
-
 	}
 
 	for i, ret := range fakeAirportTests {

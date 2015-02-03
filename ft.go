@@ -53,9 +53,8 @@ func main() {
 					fmt.Println("Error, could not validate airport code.")
 					os.Exit(1)
 				}
-				fmt.Println("Validated!")
 				airportIndex := getAirportIndex(inputAirport)
-				fmt.Println("Index is ", airportIndex)
+				_ = airportIndex
 			},
 		},
 		{
@@ -122,9 +121,9 @@ Download data from openflights.org to not make much use of the FlightAware API (
 */
 func getStaticData() int {
 	os.MkdirAll(baseDir, 0777)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat", outputFileAirports)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat", outputFileAirlines)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat", outputFileRoutes)
+	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat?format=raw", outputFileAirports)
+	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat?format=raw", outputFileAirlines)
+	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", outputFileRoutes)
 	return 0
 }
 
@@ -163,24 +162,20 @@ func getAirportIndex(airportCode string) int {
 		fmt.Println(err)
 		return -2
 	}
-	fmt.Println("Open file...")
 	defer csvfile.Close()
 	reader := csv.NewReader(csvfile)
 
 	reader.FieldsPerRecord = -1
-	fmt.Println("Read...")
 
 	rawCSVdata, err := reader.ReadAll()
 
 	if err != nil {
 		fmt.Println(err)
-		//		os.Exit(1)
+		os.Exit(1)
 	}
-	fmt.Println("Begin Iteration...")
 	for _, each := range rawCSVdata {
-		fmt.Printf("Airport: %s IATA: %s, ICAO: %s\n, Index: %d", each[1], each[4], each[5], each[0])
 		if each[4] == airportCode || each[5] == airportCode {
-			fmt.Printf("Airport: %s IATA: %s, ICAO: %s\n, Index: %d", each[1], each[4], each[5], each[0])
+			fmt.Printf("Airport: %s. IATA: %s, ICAO: %s\n, Index: %d", each[1], each[4], each[5], each[0])
 			index, _ := strconv.Atoi(each[0])
 			return index
 		}
