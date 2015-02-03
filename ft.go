@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+//	"encoding/xml"
 )
 
 /*
@@ -45,6 +46,7 @@ func main() {
 			Usage:     "Display Airport Information",
 			Action: func(c *cli.Context) {
 				var ai airportInformation
+				//var aimetar airportMETAR
 				var inputAirport string = c.Args()[0]
 				if _, err := os.Stat(outputFileAirports); os.IsNotExist(err) {
 					getStaticData()
@@ -59,6 +61,7 @@ func main() {
 				fmt.Println("Airport Name:",ai.airportName)
 				fmt.Print("Location    : ", ai.airportCity,", ",ai.airportCountry,"\n")
 				fmt.Println("ICAO        :", ai.airportICAOCode," IATA: ", ai.airportIATACode)
+				//aimetar :=
 			},
 		},
 		{
@@ -177,6 +180,22 @@ func getAirportIndex(airportCode string) int {
 	}
 	return -2
 }
+
+/*func getAirportMETAR(airportICAOCode string) airportMETAR {
+	var res airportMETAR
+	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
+	xmlFile, err := os.Open(METARURL)
+	if err != nil {
+		fmt.Println("Error opening URL:", err)
+		os.Exit(1)
+	}
+	defer xmlFile.Close()
+	
+	var q Query
+	xml.Unmarshal(xmlFile, &q)
+
+	return res
+}*/
 
 /*
 ================== Some standard trivial functions to avoid repetition. =============================
