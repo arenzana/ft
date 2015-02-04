@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"strings"
 )
 
 var airportTests = []struct {
@@ -82,5 +83,16 @@ func TestGetAirportData(t *testing.T) {
 	airportInfo = getAirportData(getAirportIndex("KJFK"))
 	if airportInfo.airportIndex != 3797 {
 		t.Error("Error! Got %d but expected 3797", airportInfo.airportIndex)
+	}
+}
+
+func TestGetAirportMETAR(t *testing.T){
+	for _, test := range airportTests {
+		result := getAirportMETAR(test.airportICAOCode)
+		slices := strings.Split(result," ")
+		firstCode := slices[0]
+		if firstCode != test.airportICAOCode {
+			t.Error("Error! Got %s but expected %s", firstCode, test.airportICAOCode)
+		}
 	}
 }
