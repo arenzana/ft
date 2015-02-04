@@ -58,7 +58,6 @@ func TestValidateAirportCode(t *testing.T) {
 }
 
 /*Test to get airport indexes*/
-
 func TestGetAirportIndex(t *testing.T) {
 	for i, test := range airportTests {
 		indexICAO := getAirportIndex(test.airportICAOCode)
@@ -86,6 +85,7 @@ func TestGetAirportData(t *testing.T) {
 	}
 }
 
+/*Test to get airport METAR*/
 func TestGetAirportMETAR(t *testing.T){
 	for _, test := range airportTests {
 		result := getAirportMETAR(test.airportICAOCode)
@@ -95,4 +95,8 @@ func TestGetAirportMETAR(t *testing.T){
 			t.Error("Error! Got %s but expected %s", firstCode, test.airportICAOCode)
 		}
 	}
+}
+
+func testGetFlightData(t *testing.T) {
+	
 }

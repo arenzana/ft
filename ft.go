@@ -22,8 +22,10 @@ const author string = "Ismael Arenzana"
 const email string = "iarenzana@gmail.com"
 const appName string = "ft"
 const appDescription string = "Command-line flight tracker"
+const flightAwareBase string = "https://flightxml.flightaware.com/json/FlightXML2/"
 
 var userHome string = os.Getenv("HOME")
+var flightAwareAPIKey string = os.Getenv("FLIGHTAWARE_API_KEY")
 var baseDir string = filepath.Dir(userHome + "/.ft/")
 var outputFileAirports string = baseDir + "/airports.dat"
 var outputFileAirlines string = baseDir + "/airlines.dat"
@@ -73,6 +75,8 @@ func main() {
 				if _, err := os.Stat(outputFileRoutes); os.IsNotExist(err) {
 					getStaticData()
 				}
+			var inputFlightToTrack string = c.Args()[0]
+			_ = getFlightData(inputFlightToTrack)
 			},
 		},
 		{
@@ -182,6 +186,9 @@ func getAirportIndex(airportCode string) int {
 	return -2
 }
 
+/*
+Function to get an airport METAR
+*/
 func getAirportMETAR(airportICAOCode string) string {
 	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
     var metar string
@@ -210,6 +217,13 @@ func getAirportMETAR(airportICAOCode string) string {
     	break
     }
 	return metar
+}
+
+func getFlightData(flightNumber string) flightInformation {
+	var flightInfo flightInformation
+	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=0"
+	fmt.Println(flightInfoURL)
+	return flightInfo
 }
 
 /*
