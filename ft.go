@@ -11,6 +11,10 @@ import (
 	"strconv"
 	"io/ioutil"
 	"github.com/moovweb/gokogiri"
+	"encoding/json"
+    "github.com/jmoiron/jsonq"
+    "strings"
+    "bufio"
 )
 
 /*
@@ -26,6 +30,7 @@ const flightAwareBase string = "https://flightxml.flightaware.com/json/FlightXML
 
 var userHome string = os.Getenv("HOME")
 var flightAwareAPIKey string = os.Getenv("FLIGHTAWARE_API_KEY")
+var flightAwareAPIUser string = os.Getenv("FLIGHTAWARE_API_USER")
 var baseDir string = filepath.Dir(userHome + "/.ft/")
 var outputFileAirports string = baseDir + "/airports.dat"
 var outputFileAirlines string = baseDir + "/airlines.dat"
@@ -178,7 +183,6 @@ func getAirportIndex(airportCode string) int {
 	}
 	for _, each := range rawCSVdata {
 		if each[4] == airportCode || each[5] == airportCode {
-//			fmt.Printf("Airport: %s. IATA: %s, ICAO: %s, Index: %s\n", each[1], each[4], each[5], each[0])
 			index, _ := strconv.Atoi(each[0])
 			return index
 		}
@@ -221,8 +225,43 @@ func getAirportMETAR(airportICAOCode string) string {
 
 func getFlightData(flightNumber string) flightInformation {
 	var flightInfo flightInformation
-	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=0"
-	fmt.Println(flightInfoURL)
+//	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=0"
+
+/*	client := &http.Client{}
+    req, err := http.NewRequest("GET", flightInfoURL, nil)
+    fmt.Println(flightAwareAPIUser + " " + flightAwareAPIKey)
+    req.SetBasicAuth(flightAwareAPIUser, flightAwareAPIKey)
+    resp, err := client.Do(req)
+    if err != nil {
+        fmt.Println("error %v", err)
+        os.Exit(-1)
+    }
+    defer resp.Body.Close()
+    bodyText, err := ioutil.ReadAll(resp.Body)
+    s := string(bodyText)
+*/
+
+	jsonfile, err := os.Open("/Users/iaren/tmp/flightinfo.json")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	defer jsonfile.Close()
+
+	scanner := bufio.NewScanner(jsonfile)
+	var lines [] string
+  	for scanner.Scan() {
+    lines = append(lines, scanner.Text())
+  	}
+//  	var scannerText string
+//  	scannerText = scanner.Text()
+//  	fmt.Println(scannerText)
+    data := map[string]interface{}{}
+	dec := json.NewDecoder(strings.NewReader(lines[0]))
+	dec.Decode(&data)
+	jq := jsonq.NewQuery(data)
+	flightInfo.destinationCity, _ = jq.String("FlightInfoExResult")
+	fmt.Println(flightInfo.destinationCity)
 	return flightInfo
 }
 
