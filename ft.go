@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/cli"
-//	"github.com/jmoiron/jsonq"
-	"github.com/moovweb/gokogiri"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,7 +13,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-	//	"strings"
+//	"strings"
 )
 
 /*
@@ -210,8 +208,9 @@ func getAirportIndex(airportCode string) int {
 Function to get an airport METAR
 */
 func getAirportMETAR(airportICAOCode string) string {
-	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
-	var metar string
+//	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
+	var METARURL string = "http://dev.geonames.org/weatherIcaoJSON?ICAO=" + airportICAOCode
+	met := Metar{}
 
 	resp, err := http.Get(METARURL)
 	if err != nil {
@@ -221,23 +220,18 @@ func getAirportMETAR(airportICAOCode string) string {
 	defer resp.Body.Close()
 
 	data, _ := ioutil.ReadAll(resp.Body)
-	doc, err := gokogiri.ParseXml(data)
 	if err != nil {
 		os.Exit(-1)
 	}
-	defer doc.Free()
 
-	metars, err := doc.Root().Search("data/METAR/raw_text")
-	if err != nil {
-		fmt.Println("Error parsing XML!")
+	err2 :=json.Unmarshal([]byte(string(data)), &met)
+	if err2 != nil {
+		fmt.Println("Error parsing data! ",err2)
 		os.Exit(-1)
 	}
-	for _, resultset := range metars {
-		metar = resultset.Content()
-		break
-	}
-	return metar
+	return met.WeatherObservation.Observation
 }
+
 
 func getFlightData(flightNumber string) flightInformation {
 	flightInfo := flightInformation{}

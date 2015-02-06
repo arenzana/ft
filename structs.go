@@ -38,3 +38,25 @@ type flightInformation struct {
 		NextOffset int `json:"next_offset"`
 	} `json:"FlightInfoExResult"`
 }
+
+type Metar struct {
+	WeatherObservation struct {
+		Clouds             string `json:"clouds"`
+		CloudsCode         string `json:"cloudsCode"`
+		CountryCode        string `json:"countryCode"`
+		Datetime           string `json:"datetime"`
+		DewPoint           string `json:"dewPoint"`
+		Elevation          int    `json:"elevation"`
+		HectoPascAltimeter int    `json:"hectoPascAltimeter"`
+		Humidity           int    `json:"humidity"`
+		ICAO               string `json:"ICAO"`
+		Lat                float64 `json:"lat"`
+		Lng                float64 `json:"lng"`
+		Observation        string `json:"observation"`
+		StationName        string `json:"stationName"`
+		Temperature        string `json:"temperature"`
+		WeatherCondition   string `json:"weatherCondition"`
+		WindDirection      int    `json:"windDirection"`
+		WindSpeed          string `json:"windSpeed"`
+	} `json:"weatherObservation"`
+}
