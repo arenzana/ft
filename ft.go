@@ -1,20 +1,20 @@
 package main
 
 import (
+	//	"bufio"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/jmoiron/jsonq"
+	"github.com/moovweb/gokogiri"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
-	"io/ioutil"
-	"github.com/moovweb/gokogiri"
-	"encoding/json"
-    "github.com/jmoiron/jsonq"
-    "strings"
-    "bufio"
+	//	"strings"
 )
 
 /*
@@ -65,9 +65,9 @@ func main() {
 				}
 				airportIndex := getAirportIndex(inputAirport)
 				ai = getAirportData(airportIndex)
-				fmt.Println("Airport Name:",ai.airportName)
-				fmt.Print("Location    : ", ai.airportCity,", ",ai.airportCountry,"\n")
-				fmt.Println("ICAO        :", ai.airportICAOCode," IATA: ", ai.airportIATACode)
+				fmt.Println("Airport Name:", ai.airportName)
+				fmt.Print("Location    : ", ai.airportCity, ", ", ai.airportCountry, "\n")
+				fmt.Println("ICAO        :", ai.airportICAOCode, " IATA: ", ai.airportIATACode)
 				metar := getAirportMETAR(ai.airportICAOCode)
 				fmt.Println("METAR       :", metar)
 			},
@@ -80,8 +80,8 @@ func main() {
 				if _, err := os.Stat(outputFileRoutes); os.IsNotExist(err) {
 					getStaticData()
 				}
-			var inputFlightToTrack string = c.Args()[0]
-			_ = getFlightData(inputFlightToTrack)
+				var inputFlightToTrack string = c.Args()[0]
+				_ = getFlightData(inputFlightToTrack)
 			},
 		},
 		{
@@ -126,7 +126,7 @@ Get basic airport info
 */
 func getAirportData(airportIndex int) airportInformation {
 	var airportDataResult airportInformation
-	
+
 	csvfile, err := os.Open(outputFileAirports)
 	if err != nil {
 		fmt.Println(err)
@@ -145,7 +145,7 @@ func getAirportData(airportIndex int) airportInformation {
 	}
 	for _, each := range rawCSVdata {
 		index, _ := strconv.Atoi(each[0])
-		if  index == airportIndex {
+		if index == airportIndex {
 			lat, _ := strconv.ParseFloat(each[6], 32)
 			lon, _ := strconv.ParseFloat(each[7], 32)
 			airportDataResult.airportName = each[1]
@@ -161,6 +161,7 @@ func getAirportData(airportIndex int) airportInformation {
 
 	return airportDataResult
 }
+
 /*
 Get index of an airport code so we can gather all the data by index
 */
@@ -195,73 +196,89 @@ Function to get an airport METAR
 */
 func getAirportMETAR(airportICAOCode string) string {
 	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
-    var metar string
+	var metar string
 
 	resp, err := http.Get(METARURL)
-    if err != nil {
-        fmt.Println("error %v", err)
-        os.Exit(-1)
-    }
-    defer resp.Body.Close()
+	if err != nil {
+		fmt.Println("error %v", err)
+		os.Exit(-1)
+	}
+	defer resp.Body.Close()
 
-    data,_ := ioutil.ReadAll(resp.Body)
-    doc, err := gokogiri.ParseXml(data)
-    if err != nil{
-    	os.Exit(-1)
-    }
-    defer doc.Free()
+	data, _ := ioutil.ReadAll(resp.Body)
+	doc, err := gokogiri.ParseXml(data)
+	if err != nil {
+		os.Exit(-1)
+	}
+	defer doc.Free()
 
-    metars, err := doc.Root().Search("data/METAR/raw_text")
-    if err != nil {
-    	fmt.Println("Error parsing XML!")
-    	os.Exit(-1)
-    }
-    for _, resultset := range metars {
-    	metar = resultset.Content()
-    	break
-    }
+	metars, err := doc.Root().Search("data/METAR/raw_text")
+	if err != nil {
+		fmt.Println("Error parsing XML!")
+		os.Exit(-1)
+	}
+	for _, resultset := range metars {
+		metar = resultset.Content()
+		break
+	}
 	return metar
 }
 
 func getFlightData(flightNumber string) flightInformation {
 	var flightInfo flightInformation
-//	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=0"
+	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=0"
 
-/*	client := &http.Client{}
-    req, err := http.NewRequest("GET", flightInfoURL, nil)
-    fmt.Println(flightAwareAPIUser + " " + flightAwareAPIKey)
-    req.SetBasicAuth(flightAwareAPIUser, flightAwareAPIKey)
-    resp, err := client.Do(req)
-    if err != nil {
-        fmt.Println("error %v", err)
-        os.Exit(-1)
-    }
-    defer resp.Body.Close()
-    bodyText, err := ioutil.ReadAll(resp.Body)
-    s := string(bodyText)
-*/
-
-	jsonfile, err := os.Open("/Users/iaren/tmp/flightinfo.json")
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", flightInfoURL, nil)
+	req.SetBasicAuth(flightAwareAPIUser, flightAwareAPIKey)
+	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error %v", err)
 		os.Exit(-1)
 	}
-	defer jsonfile.Close()
+	defer resp.Body.Close()
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	//	s := string(bodyText)
 
-	scanner := bufio.NewScanner(jsonfile)
-	var lines [] string
-  	for scanner.Scan() {
-    lines = append(lines, scanner.Text())
-  	}
-//  	var scannerText string
-//  	scannerText = scanner.Text()
-//  	fmt.Println(scannerText)
-    data := map[string]interface{}{}
-	dec := json.NewDecoder(strings.NewReader(lines[0]))
-	dec.Decode(&data)
+	/*
+		jsonfile, err := os.Open("/Users/isma/tmp/flightinfo.json")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+		defer jsonfile.Close()
+
+		scanner := bufio.NewScanner(jsonfile)
+		var lines []string
+		for scanner.Scan() {
+			lines = append(lines, scanner.Text())
+		}
+		//  	var scannerText string
+		//  	scannerText = scanner.Text()
+		//  	fmt.Println(scannerText)
+		var result string
+		for _, l := range lines {
+			result = string(l)
+		}
+		data := map[string]interface{}{}
+		dec := json.NewDecoder(strings.NewReader(result))
+		dec.Decode(&data)
+		jq := jsonq.NewQuery(data)
+		destinationCity, _ := jq.String("FlightInfoExResult", "next_offset", "1", "flights", "0")
+		fmt.Println(destinationCity)
+	*/
+
+	data := make(map[string]interface{})
+	err = json.Unmarshal(bodyText, &data)
+	if err != nil {
+		fmt.Println("Ha petao!")
+		os.Exit(1)
+	}
 	jq := jsonq.NewQuery(data)
-	flightInfo.destinationCity, _ = jq.String("FlightInfoExResult")
-	fmt.Println(flightInfo.destinationCity)
+
+	destinationCity, err := jq.String("FlightInfoExResult")
+	fmt.Println(destinationCity)
+
 	return flightInfo
 }
 
