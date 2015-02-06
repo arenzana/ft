@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 	"strings"
+//	"fmt"
 )
 
 var airportTests = []struct {
@@ -28,6 +29,24 @@ var airportTests = []struct {
 	{
 		airportICAOCode: "FACT",
 		airportIATACode: "CPT",
+	},
+}
+
+var FlightTests = []struct {
+	FlightID string
+	Destination string
+}{
+	{
+		FlightID: "UA922",
+		Destination: "EGLL",
+	},
+	{
+		FlightID: "AA47",
+		Destination: "KORD",		
+	},
+	{
+		FlightID: "AF90",
+		Destination: "KMIA",
 	},
 }
 
@@ -97,6 +116,14 @@ func TestGetAirportMETAR(t *testing.T){
 	}
 }
 
-func testGetFlightData(t *testing.T) {
-	
+func TestGetFlightData(t *testing.T) {
+	var fi flightInformation
+
+	for i, test := range FlightTests {
+		fi = getFlightData(test.FlightID)
+		if fi.FlightInfoExResult.Flights[0].Destination != test.Destination {
+			t.Error("Expected ",test.Destination, "but got ",fi.FlightInfoExResult.Flights[i].Destination, "Test %d", i)
+		}
+
+	}
 }

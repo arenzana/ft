@@ -1,12 +1,12 @@
 package main
 
 import (
-	//	"bufio"
+//	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/jmoiron/jsonq"
+//	"github.com/jmoiron/jsonq"
 	"github.com/moovweb/gokogiri"
 	"io"
 	"io/ioutil"
@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 	//	"strings"
 )
 
@@ -81,7 +82,21 @@ func main() {
 					getStaticData()
 				}
 				var inputFlightToTrack string = c.Args()[0]
-				_ = getFlightData(inputFlightToTrack)
+				flightData := getFlightData(inputFlightToTrack)
+				for i := range flightData.FlightInfoExResult.Flights {
+					fmt.Println("Origin City      : ", flightData.FlightInfoExResult.Flights[i].OriginCity)
+					fmt.Println("Destination City : ", flightData.FlightInfoExResult.Flights[i].DestinationCity)
+					fmt.Println("Aircraft Type    : ", flightData.FlightInfoExResult.Flights[i].Aircrafttype)
+//					t := int64(flightData.FlightInfoExResult.Flights[i].FiledTime)
+//					filedETA := time.Unix(t,0)
+					t2 := int64(flightData.FlightInfoExResult.Flights[i].Estimatedarrivaltime)
+					actualETA := time.Unix(t2,0)
+
+					fmt.Println("Filed Arrival    : ", flightData.FlightInfoExResult.Flights[i].FiledEte)
+					fmt.Println("Scheduled Arrival: ", actualETA)
+					fmt.Println("Route            : ", flightData.FlightInfoExResult.Flights[i].Route)
+				}
+
 			},
 		},
 		{
@@ -225,9 +240,8 @@ func getAirportMETAR(airportICAOCode string) string {
 }
 
 func getFlightData(flightNumber string) flightInformation {
-	var flightInfo flightInformation
-	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=0"
-
+	flightInfo := flightInformation{}
+	var flightInfoURL string = flightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=2"
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", flightInfoURL, nil)
 	req.SetBasicAuth(flightAwareAPIUser, flightAwareAPIKey)
@@ -238,46 +252,33 @@ func getFlightData(flightNumber string) flightInformation {
 	}
 	defer resp.Body.Close()
 	bodyText, err := ioutil.ReadAll(resp.Body)
-	//	s := string(bodyText)
-
-	/*
-		jsonfile, err := os.Open("/Users/isma/tmp/flightinfo.json")
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
-		}
-		defer jsonfile.Close()
-
-		scanner := bufio.NewScanner(jsonfile)
-		var lines []string
-		for scanner.Scan() {
-			lines = append(lines, scanner.Text())
-		}
-		//  	var scannerText string
-		//  	scannerText = scanner.Text()
-		//  	fmt.Println(scannerText)
-		var result string
-		for _, l := range lines {
-			result = string(l)
-		}
-		data := map[string]interface{}{}
-		dec := json.NewDecoder(strings.NewReader(result))
-		dec.Decode(&data)
-		jq := jsonq.NewQuery(data)
-		destinationCity, _ := jq.String("FlightInfoExResult", "next_offset", "1", "flights", "0")
-		fmt.Println(destinationCity)
-	*/
-
-	data := make(map[string]interface{})
-	err = json.Unmarshal(bodyText, &data)
+/*	jsonfile, err := os.Open("/Users/iaren/tmp/flightinfo.json")
 	if err != nil {
-		fmt.Println("Ha petao!")
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	defer jsonfile.Close()
+
+	scanner := bufio.NewScanner(jsonfile)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	var result string
+	for _, l := range lines {
+		result = string(l)
+	}
+*/
+	err = json.Unmarshal([]byte(string(bodyText)), &flightInfo)
+	if err != nil {
+		fmt.Println("Ha petao! ", err)
 		os.Exit(1)
 	}
-	jq := jsonq.NewQuery(data)
 
-	destinationCity, err := jq.String("FlightInfoExResult")
-	fmt.Println(destinationCity)
+	for i := range flightInfo.FlightInfoExResult.Flights {
+//		fmt.Println(flightInfo.FlightInfoExResult.Flights[i].Ident)
+		_ = i
+	}
 
 	return flightInfo
 }

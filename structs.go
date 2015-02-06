@@ -12,25 +12,29 @@ type airportInformation struct {
 }
 
 type flightInformation struct {
-	flightNumber 			string
-	actualarrivaltime		int
-	actualdeparturetime		int
-	aircrafttype			string
-	destination				string
-	destinationCity			string
-	destinationName			string
-	diverted				string
-	estimatedarrivaltime	int
-	faFlightID				string
-	filed_airspeed_kts		int
-	filed_airspeed_mach		string
-	filed_altitude			int
-	filed_departuretime		int
-	filed_ete				string
-	filed_time 				int
-	ident					string
-	origin					string
-	originCity				string
-	originName				string
-	route					string
+	FlightInfoExResult struct {
+		Flights []struct {
+			Actualarrivaltime    int    `json:"actualarrivaltime"`
+			Actualdeparturetime  int    `json:"actualdeparturetime"`
+			Aircrafttype         string `json:"aircrafttype"`
+			Destination          string `json:"destination"`
+			DestinationCity      string `json:"destinationCity"`
+			DestinationName      string `json:"destinationName"`
+			Diverted             string `json:"diverted"`
+			Estimatedarrivaltime int    `json:"estimatedarrivaltime"`
+			FaFlightID           string `json:"faFlightID"`
+			FiledAirspeedKts     int    `json:"filed_airspeed_kts"`
+			FiledAirspeedMach    string `json:"filed_airspeed_mach"`
+			FiledAltitude        int    `json:"filed_altitude"`
+			FiledDeparturetime   int    `json:"filed_departuretime"`
+			FiledEte             string `json:"filed_ete"`
+			FiledTime            int    `json:"filed_time"`
+			Ident                string `json:"ident"`
+			Origin               string `json:"origin"`
+			OriginCity           string `json:"originCity"`
+			OriginName           string `json:"originName"`
+			Route                string `json:"route"`
+		} `json:"flights"`
+		NextOffset int `json:"next_offset"`
+	} `json:"FlightInfoExResult"`
 }
