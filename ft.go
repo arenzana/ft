@@ -1,7 +1,7 @@
 package main
 
 import (
-//	"bufio"
+	//	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-//	"strings"
+	//	"strings"
 )
 
 /*
@@ -80,15 +80,19 @@ func main() {
 					getStaticData()
 				}
 				var inputFlightToTrack string = c.Args()[0]
+				if checkEnvVariables() != 0 {
+					fmt.Println("Please set the FLIGHTAWARE_API_KEY and FLIGHTAWARE_API_USER variables.")
+					os.Exit(-1)
+				}
 				flightData := getFlightData(inputFlightToTrack)
 				for i := range flightData.FlightInfoExResult.Flights {
 					fmt.Println("Origin City      : ", flightData.FlightInfoExResult.Flights[i].OriginCity)
 					fmt.Println("Destination City : ", flightData.FlightInfoExResult.Flights[i].DestinationCity)
 					fmt.Println("Aircraft Type    : ", flightData.FlightInfoExResult.Flights[i].Aircrafttype)
-//					t := int64(flightData.FlightInfoExResult.Flights[i].FiledTime)
-//					filedETA := time.Unix(t,0)
+					//					t := int64(flightData.FlightInfoExResult.Flights[i].FiledTime)
+					//					filedETA := time.Unix(t,0)
 					t2 := int64(flightData.FlightInfoExResult.Flights[i].Estimatedarrivaltime)
-					actualETA := time.Unix(t2,0)
+					actualETA := time.Unix(t2, 0)
 
 					fmt.Println("Filed Arrival    : ", flightData.FlightInfoExResult.Flights[i].FiledEte)
 					fmt.Println("Scheduled Arrival: ", actualETA)
@@ -208,7 +212,7 @@ func getAirportIndex(airportCode string) int {
 Function to get an airport METAR
 */
 func getAirportMETAR(airportICAOCode string) string {
-//	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
+	//	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
 	var METARURL string = "http://dev.geonames.org/weatherIcaoJSON?ICAO=" + airportICAOCode
 	met := Metar{}
 
@@ -224,14 +228,13 @@ func getAirportMETAR(airportICAOCode string) string {
 		os.Exit(-1)
 	}
 
-	err2 :=json.Unmarshal([]byte(string(data)), &met)
+	err2 := json.Unmarshal([]byte(string(data)), &met)
 	if err2 != nil {
-		fmt.Println("Error parsing data! ",err2)
+		fmt.Println("Error parsing data! ", err2)
 		os.Exit(-1)
 	}
 	return met.WeatherObservation.Observation
 }
-
 
 func getFlightData(flightNumber string) flightInformation {
 	flightInfo := flightInformation{}
@@ -246,23 +249,23 @@ func getFlightData(flightNumber string) flightInformation {
 	}
 	defer resp.Body.Close()
 	bodyText, err := ioutil.ReadAll(resp.Body)
-/*	jsonfile, err := os.Open("/Users/iaren/tmp/flightinfo.json")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-	defer jsonfile.Close()
+	/*	jsonfile, err := os.Open("/Users/iaren/tmp/flightinfo.json")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+		defer jsonfile.Close()
 
-	scanner := bufio.NewScanner(jsonfile)
-	var lines []string
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	var result string
-	for _, l := range lines {
-		result = string(l)
-	}
-*/
+		scanner := bufio.NewScanner(jsonfile)
+		var lines []string
+		for scanner.Scan() {
+			lines = append(lines, scanner.Text())
+		}
+		var result string
+		for _, l := range lines {
+			result = string(l)
+		}
+	*/
 	err = json.Unmarshal([]byte(string(bodyText)), &flightInfo)
 	if err != nil {
 		fmt.Println("Ha petao! ", err)
@@ -270,7 +273,7 @@ func getFlightData(flightNumber string) flightInformation {
 	}
 
 	for i := range flightInfo.FlightInfoExResult.Flights {
-//		fmt.Println(flightInfo.FlightInfoExResult.Flights[i].Ident)
+		//		fmt.Println(flightInfo.FlightInfoExResult.Flights[i].Ident)
 		_ = i
 	}
 
@@ -319,4 +322,10 @@ func downloadFromUrl(url string, fileName string) {
 		return
 	}
 	_ = bytesRead
+}
+func checkEnvVariables() int {
+	if flightAwareAPIKey == "" || flightAwareAPIUser == "" {
+		return 1
+	}
+	return 0
 }
