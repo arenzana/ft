@@ -11,7 +11,7 @@ import (
 Constant definitions
 */
 
-const version string = "0.2"
+const version string = "0.2.1"
 const author string = "Ismael Arenzana"
 const email string = "iarenzana@gmail.com"
 const appName string = "ft"
