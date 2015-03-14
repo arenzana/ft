@@ -15,7 +15,7 @@ You will need a [Flightaware API key] (http://flightaware.com/commercial/flightx
 git clone https://github.com/iarenzana/ft
 git submodule init
 cd ft
-go build
+go build -o ${GOPATH}/bin
 ```
 
 This will generate a binary for your platform.
@@ -51,5 +51,4 @@ GLOBAL OPTIONS:
 
 * [cli] (https://github.com/codegangsta/cli) - Allows me to create a command line application super fast.
 * [pb] (https://github.com/cheggaaa/pb) - For progress bars.
-* [jflect] (https://github.com/str1ngs/jflect) - Go struct generator from JSON. Life Saver.
 * [gox] (https://github.com/mitchellh/gox) - To compile the code for several architectures.
