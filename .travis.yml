@@ -11,6 +11,7 @@ install:
     - go get
     - go build -o ft_bin
 
-secure: 
-    - "KXLQqyiyCFBD+OydCPJINY47T8GgdWhv+LWJxZpUJAo8h6Qfq5wstxM4aULTfUfFrOTh5nAYlS7pNGRdiCbaW6PTAwUMXI0BYw9FA2XOoWYqSe82x6jyVBAcbdOkbHihJx+vlhf0Jrh1en4rS0jEDzuU0IMdyJeIVT1prbtSXoM="
-    - "qgQ2HIYdsWphGd6eLeqLG/aOurZm5MElNnJM/hhN93FaXmwXhIa+Fd3WX1+IW6pDcNW/99zOkp+zDqoD+DqNFPxPkWjuinM2ptFsCB6MHQPVzY79OVAGpV9LPwWw7rvuoo0Fiz+F6UbqVXcXmcX2nDvusXzGIH7gCrd7WbZH838="
+env:
+
+    - secure: "KXLQqyiyCFBD+OydCPJINY47T8GgdWhv+LWJxZpUJAo8h6Qfq5wstxM4aULTfUfFrOTh5nAYlS7pNGRdiCbaW6PTAwUMXI0BYw9FA2XOoWYqSe82x6jyVBAcbdOkbHihJx+vlhf0Jrh1en4rS0jEDzuU0IMdyJeIVT1prbtSXoM="
+    - secure: "qgQ2HIYdsWphGd6eLeqLG/aOurZm5MElNnJM/hhN93FaXmwXhIa+Fd3WX1+IW6pDcNW/99zOkp+zDqoD+DqNFPxPkWjuinM2ptFsCB6MHQPVzY79OVAGpV9LPwWw7rvuoo0Fiz+F6UbqVXcXmcX2nDvusXzGIH7gCrd7WbZH838="
