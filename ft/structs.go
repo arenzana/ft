@@ -1,4 +1,4 @@
-package main
+package ft
 
 type airportInformation struct {
 	airportName     string
