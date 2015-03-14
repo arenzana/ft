@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/iarenzana/ft.png)](https://travis-ci.org/iarenzana/ft)
+
 # ft
 Command line flight tracker
 
