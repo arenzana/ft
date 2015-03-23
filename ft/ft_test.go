@@ -150,7 +150,7 @@ func TestUnitGetStatisticData(t *testing.T) {
 }
 /*Test to test download functionality*/
 func TestUnitDownloadFromURL(t *testing.T) {
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
+	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
 	if _, err := os.Stat(OutputFileRoutes); os.IsNotExist(err) {
 		t.Error("Couldn't download file ",OutputFileRoutes)
 	}
