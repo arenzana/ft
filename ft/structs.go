@@ -39,6 +39,7 @@ type flightInformation struct {
 	} `json:"FlightInfoExResult"`
 }
 
+//Metar - Struct that contains METAR data
 type Metar struct {
 	WeatherObservation struct {
 		Clouds             string `json:"clouds"`

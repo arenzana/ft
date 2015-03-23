@@ -13,19 +13,24 @@ import (
 	"time"
 )
 
-var FlightAwareBase string = "https://flightxml.flightaware.com/json/FlightXML2/"
-var UserHome string = os.Getenv("HOME")
-var FlightAwareAPIKey string = os.Getenv("FLIGHTAWARE_API_KEY")
-var FlightAwareAPIUser string = os.Getenv("FLIGHTAWARE_API_USER")
-var BaseDir string = filepath.Dir(UserHome + "/.ft/")
-var OutputFileAirports string = BaseDir + "/airports.dat"
-var OutputFileAirlines string = BaseDir + "/airlines.dat"
-var OutputFileRoutes string = BaseDir + "/routes.dat"
+//FlightAwareBase var with the base URI for the Flight data server
+var FlightAwareBase = "https://flightxml.flightaware.com/json/FlightXML2/"
+//UserHome get env for user home
+var UserHome = os.Getenv("HOME")
+//FlightAwareAPIKey key for the flight data service.
+var FlightAwareAPIKey = os.Getenv("FLIGHTAWARE_API_KEY")
+//FlightAwareAPIUser user for the flight data service.
+var FlightAwareAPIUser = os.Getenv("FLIGHTAWARE_API_USER")
+//BaseDir base data directory.
+var BaseDir = filepath.Dir(UserHome + "/.ft/")
+//OutputFileAirports file with airport data.
+var OutputFileAirports = BaseDir + "/airports.dat"
+//OutputFileAirlines file with airline data.
+var OutputFileAirlines = BaseDir + "/airlines.dat"
+//OutputFileRoutes file with route data.
+var OutputFileRoutes = BaseDir + "/routes.dat"
 
-/*
-Main airportInfo function
-*/
-
+//AirportInfoEval - Main airportInfo function
 func AirportInfoEval(inputAirport string) {
 
 	if _, err := os.Stat(OutputFileAirports); os.IsNotExist(err) {
@@ -45,6 +50,7 @@ func AirportInfoEval(inputAirport string) {
 
 }
 
+//FlightTrackingEval - Flight track evaluation
 func FlightTrackingEval(inputFlightToTrack string) {
 
 	if _, err := os.Stat(OutputFileRoutes); os.IsNotExist(err) {
@@ -71,12 +77,7 @@ func FlightTrackingEval(inputFlightToTrack string) {
 
 }
 
-/*
-Validate airport code.
--2 - Invalid code.
-1 - ICAO code.
-0 - IATA code.
-*/
+//ValidateAirportCode - Make sure the airport code is correctly formatted -2 - Invalid code. 1 - ICAO code. 0 - IATA code.
 func ValidateAirportCode(airportCode string) int32 {
 
 	var airportIndex int32 = -2
@@ -167,12 +168,12 @@ Function to get an airport METAR
 */
 func getAirportMETAR(airportICAOCode string) string {
 	//	var METARURL string = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=" + airportICAOCode + "&hoursBeforeNow=1"
-	var METARURL string = "http://dev.geonames.org/weatherIcaoJSON?ICAO=" + airportICAOCode
+	var METARURL = "http://dev.geonames.org/weatherIcaoJSON?ICAO=" + airportICAOCode
 	met := Metar{}
 
 	resp, err := http.Get(METARURL)
 	if err != nil {
-		fmt.Println("error %v", err)
+		fmt.Printf("error %v", err)
 		os.Exit(-1)
 	}
 	defer resp.Body.Close()
@@ -192,13 +193,13 @@ func getAirportMETAR(airportICAOCode string) string {
 
 func getFlightData(flightNumber string) flightInformation {
 	flightInfo := flightInformation{}
-	var flightInfoURL string = FlightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=2"
+	var flightInfoURL = FlightAwareBase + "FlightInfoEx?ident=" + flightNumber + "&howMany=1&offset=2"
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", flightInfoURL, nil)
 	req.SetBasicAuth(FlightAwareAPIUser, FlightAwareAPIKey)
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("error %v", err)
+		fmt.Printf("error %v", err)
 		os.Exit(-1)
 	}
 	defer resp.Body.Close()
@@ -226,16 +227,16 @@ Download data from openflights.org to not make much use of the FlightAware API (
 */
 func getStaticData() int {
 	os.MkdirAll(BaseDir, 0777)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat?format=raw", OutputFileAirports)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat?format=raw", OutputFileAirlines)
-	downloadFromUrl("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
+	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat?format=raw", OutputFileAirports)
+	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat?format=raw", OutputFileAirlines)
+	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
 	return 0
 }
 
 /*
 Download a file from the URL
 */
-func downloadFromUrl(url string, fileName string) {
+func downloadFromURL(url string, fileName string) {
 
 	// TODO: check file existence first with io.IsExist
 	output, err := os.Create(filepath.FromSlash(fileName))

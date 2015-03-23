@@ -67,8 +67,8 @@ func TestUnitFlightTrackingEval(t *testing.T) {
 /*Test to make sure Airport code size works*/
 func TestUnitValidateAirportCode(t *testing.T) {
 	for i, test := range airportTests {
-		var actualICAO int32 = ValidateAirportCode(test.airportICAOCode)
-		var actualIATA int32 = ValidateAirportCode(test.airportIATACode)
+		var actualICAO = ValidateAirportCode(test.airportICAOCode)
+		var actualIATA = ValidateAirportCode(test.airportIATACode)
 
 		if actualICAO != 1 {
 			t.Error("Expected 1, got ", actualICAO, "Test %d", i)
@@ -112,7 +112,7 @@ func TestUnitGetAirportData(t *testing.T) {
 	var airportInfo airportInformation
 	airportInfo = getAirportData(getAirportIndex("KJFK"))
 	if airportInfo.airportIndex != 3797 {
-		t.Error("Error! Got %d but expected 3797", airportInfo.airportIndex)
+		t.Error("Error! Expected 3797 but got ", airportInfo.airportIndex)
 	}
 }
 
@@ -123,7 +123,7 @@ func TestUnitGetAirportMETAR(t *testing.T){
 		slices := strings.Split(result," ")
 		firstCode := slices[0]
 		if firstCode != test.airportICAOCode {
-			t.Error("Error! Got %s but expected %s", firstCode, test.airportICAOCode)
+			t.Error("Error! First code and ICAO Code: ", firstCode, test.airportICAOCode)
 		}
 	}
 }
