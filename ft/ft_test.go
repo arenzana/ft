@@ -91,8 +91,8 @@ func TestUnitValidateAirportCode(t *testing.T) {
 /*Test to get airport indexes*/
 func TestUnitGetAirportIndex(t *testing.T) {
 	for i, test := range airportTests {
-		indexICAO := getAirportIndex(test.airportICAOCode)
-		indexIATA := getAirportIndex(test.airportIATACode)
+		indexICAO,_ := getAirportIndex(test.airportICAOCode)
+		indexIATA,_ := getAirportIndex(test.airportIATACode)
 
 		if indexICAO == -2 || indexIATA == -2 {
 			t.Error("Error! Got ", indexICAO, "Test %d", i)
@@ -100,7 +100,7 @@ func TestUnitGetAirportIndex(t *testing.T) {
 	}
 
 	for i, ret := range fakeAirportTests {
-		res := getAirportIndex(ret)
+		res,_ := getAirportIndex(ret)
 		if res != -2 {
 			t.Error("Error! Got ", res, "Test %d", i)
 		}
@@ -110,7 +110,8 @@ func TestUnitGetAirportIndex(t *testing.T) {
 /*Test to get airport data */
 func TestUnitGetAirportData(t *testing.T) {
 	var airportInfo airportInformation
-	airportInfo = getAirportData(getAirportIndex("KJFK"))
+	index,_ := getAirportIndex("KJFK")
+	airportInfo = getAirportData(index)
 	if airportInfo.airportIndex != 3797 {
 		t.Error("Error! Expected 3797 but got ", airportInfo.airportIndex)
 	}

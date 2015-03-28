@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
 )
 
 //FlightAwareBase var with the base URI for the Flight data server
@@ -37,10 +38,13 @@ func AirportInfoEval(inputAirport string) {
 		getStaticData()
 	}
 
-
 	var ai airportInformation
 
-	airportIndex := getAirportIndex(inputAirport)
+	airportIndex,err := getAirportIndex(inputAirport)
+	if err != nil || airportIndex == -2 {
+		fmt.Println("Airport Unknown.")
+		return
+	}
 	ai = getAirportData(airportIndex)
 	fmt.Println("Airport Name:", ai.airportName)
 	fmt.Print("Location    : ", ai.airportCity, ", ", ai.airportCountry, "\n")
@@ -113,7 +117,7 @@ func getAirportData(airportIndex int) airportInformation {
 
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		os.Exit(-1)
 	}
 	for _, each := range rawCSVdata {
 		index, _ := strconv.Atoi(each[0])
@@ -137,11 +141,11 @@ func getAirportData(airportIndex int) airportInformation {
 /*
 Get index of an airport code so we can gather all the data by index
 */
-func getAirportIndex(airportCode string) int {
+func getAirportIndex(airportCode string) (int, error) {
 	csvfile, err := os.Open(OutputFileAirports)
 	if err != nil {
 		fmt.Println(err)
-		return -2
+		return -2, err
 	}
 	defer csvfile.Close()
 	reader := csv.NewReader(csvfile)
@@ -151,16 +155,15 @@ func getAirportIndex(airportCode string) int {
 	rawCSVdata, err := reader.ReadAll()
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return -2,err
 	}
 	for _, each := range rawCSVdata {
 		if each[4] == airportCode || each[5] == airportCode {
 			index, _ := strconv.Atoi(each[0])
-			return index
+			return index,nil
 		}
 	}
-	return -2
+	return -2,nil
 }
 
 /*
@@ -207,7 +210,7 @@ func getFlightData(flightNumber string) flightInformation {
 	err = json.Unmarshal([]byte(string(bodyText)), &flightInfo)
 	if err != nil {
 		fmt.Println("Ha petao! ", err)
-		os.Exit(1)
+		os.Exit(-1)
 	}
 
 	for i := range flightInfo.FlightInfoExResult.Flights {
