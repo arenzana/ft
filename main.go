@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/iarenzana/ft/ft"
-	"github.com/codegangsta/cli"
-	"os"
 	"fmt"
+	"os"
+
+	"github.com/codegangsta/cli"
+	"github.com/iarenzana/ft/ft"
 )
 
 /*
@@ -49,7 +50,7 @@ func main() {
 			ShortName: "t",
 			Usage:     "Track a Flight",
 			Action: func(c *cli.Context) {
-			ft.FlightTrackingEval(c.Args()[0])
+				ft.FlightTrackingEval(c.Args()[0])
 
 			},
 		},
@@ -58,11 +59,10 @@ func main() {
 			ShortName: "l",
 			Usage:     "Airline Information",
 			Action: func(c *cli.Context) {
-
+				ft.AirlineInfo(c.Args()[0])
 			},
 		},
 	}
 
 	app.Run(os.Args)
 }
-
