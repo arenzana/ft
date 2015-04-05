@@ -10,24 +10,31 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
-
 )
 
 //FlightAwareBase var with the base URI for the Flight data server
 var FlightAwareBase = "https://flightxml.flightaware.com/json/FlightXML2/"
+
 //UserHome get env for user home
 var UserHome = os.Getenv("HOME")
+
 //FlightAwareAPIKey key for the flight data service.
 var FlightAwareAPIKey = os.Getenv("FLIGHTAWARE_API_KEY")
+
 //FlightAwareAPIUser user for the flight data service.
 var FlightAwareAPIUser = os.Getenv("FLIGHTAWARE_API_USER")
+
 //BaseDir base data directory.
 var BaseDir = filepath.Dir(UserHome + "/.ft/")
+
 //OutputFileAirports file with airport data.
 var OutputFileAirports = BaseDir + "/airports.dat"
+
 //OutputFileAirlines file with airline data.
 var OutputFileAirlines = BaseDir + "/airlines.dat"
+
 //OutputFileRoutes file with route data.
 var OutputFileRoutes = BaseDir + "/routes.dat"
 
@@ -40,7 +47,7 @@ func AirportInfoEval(inputAirport string) {
 
 	var ai airportInformation
 
-	airportIndex,err := getAirportIndex(inputAirport)
+	airportIndex, err := getAirportIndex(strings.ToUpper(inputAirport))
 	if err != nil || airportIndex == -2 {
 		fmt.Println("Airport Unknown.")
 		return
@@ -66,7 +73,7 @@ func FlightTrackingEval(inputFlightToTrack string) {
 		os.Exit(-1)
 	}
 
-	flightData := getFlightData(inputFlightToTrack)
+	flightData := getFlightData(strings.ToUpper(inputFlightToTrack))
 	for i := range flightData.FlightInfoExResult.Flights {
 		fmt.Println("Origin City      : ", flightData.FlightInfoExResult.Flights[i].OriginCity)
 		fmt.Println("Destination City : ", flightData.FlightInfoExResult.Flights[i].DestinationCity)
@@ -155,15 +162,15 @@ func getAirportIndex(airportCode string) (int, error) {
 	rawCSVdata, err := reader.ReadAll()
 
 	if err != nil {
-		return -2,err
+		return -2, err
 	}
 	for _, each := range rawCSVdata {
 		if each[4] == airportCode || each[5] == airportCode {
 			index, _ := strconv.Atoi(each[0])
-			return index,nil
+			return index, nil
 		}
 	}
-	return -2,nil
+	return -2, nil
 }
 
 /*
@@ -264,6 +271,8 @@ func downloadFromURL(url string, fileName string) {
 	}
 	_ = bytesRead
 }
+
+//Check that all environment variables are correctly set.
 func checkEnvVariables() int {
 	if FlightAwareAPIKey == "" || FlightAwareAPIUser == "" {
 		return 1

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/iarenzana/ft/ft"
-	"github.com/codegangsta/cli"
-	"os"
 	"fmt"
+	"os"
+
+	"github.com/codegangsta/cli"
+	"github.com/iarenzana/ft/ft"
 )
 
 /*
@@ -37,7 +38,7 @@ func main() {
 				airportVal := ft.ValidateAirportCode(c.Args()[0])
 				if airportVal == -2 {
 					fmt.Println("Error, could not validate airport code.")
-					os.Exit(1)
+					return
 				}
 
 				ft.AirportInfoEval(c.Args()[0])
@@ -49,7 +50,7 @@ func main() {
 			ShortName: "t",
 			Usage:     "Track a Flight",
 			Action: func(c *cli.Context) {
-			ft.FlightTrackingEval(c.Args()[0])
+				ft.FlightTrackingEval(c.Args()[0])
 
 			},
 		},
@@ -65,4 +66,3 @@ func main() {
 
 	app.Run(os.Args)
 }
-
