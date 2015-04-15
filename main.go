@@ -38,7 +38,7 @@ func main() {
 				airportVal := ft.ValidateAirportCode(c.Args()[0])
 				if airportVal == -2 {
 					fmt.Println("Error, could not validate airport code.")
-					os.Exit(1)
+					return
 				}
 
 				ft.AirportInfoEval(c.Args()[0])

@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -46,7 +47,7 @@ func AirportInfoEval(inputAirport string) {
 
 	var ai airportInformation
 
-	airportIndex, err := getAirportIndex(inputAirport)
+	airportIndex, err := getAirportIndex(strings.ToUpper(inputAirport))
 	if err != nil || airportIndex == -2 {
 		fmt.Println("Airport Unknown.")
 		return
@@ -73,7 +74,7 @@ func FlightTrackingEval(inputFlightToTrack string) {
 		os.Exit(-1)
 	}
 
-	flightData := getFlightData(inputFlightToTrack)
+	flightData := getFlightData(strings.ToUpper(inputFlightToTrack))
 	for i := range flightData.FlightInfoExResult.Flights {
 		fmt.Println("Origin City      : ", flightData.FlightInfoExResult.Flights[i].OriginCity)
 		fmt.Println("Destination City : ", flightData.FlightInfoExResult.Flights[i].DestinationCity)
@@ -345,6 +346,8 @@ func downloadFromURL(url string, fileName string) {
 	}
 	_ = bytesRead
 }
+
+//Check that all environment variables are correctly set.
 func checkEnvVariables() int {
 	if FlightAwareAPIKey == "" || FlightAwareAPIUser == "" {
 		return 1
