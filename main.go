@@ -59,7 +59,7 @@ func main() {
 			ShortName: "l",
 			Usage:     "Airline Information",
 			Action: func(c *cli.Context) {
-
+				ft.AirlineInfo(c.Args()[0])
 			},
 		},
 	}

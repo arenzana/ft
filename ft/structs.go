@@ -9,6 +9,7 @@ type airportInformation struct {
 	airportCity     string
 	airportLat      float64
 	airportLong     float64
+	airportAltitude int
 }
 
 type flightInformation struct {
@@ -42,22 +43,33 @@ type flightInformation struct {
 //Metar - Struct that contains METAR data
 type Metar struct {
 	WeatherObservation struct {
-		Clouds             string `json:"clouds"`
-		CloudsCode         string `json:"cloudsCode"`
-		CountryCode        string `json:"countryCode"`
-		Datetime           string `json:"datetime"`
-		DewPoint           string `json:"dewPoint"`
-		Elevation          int    `json:"elevation"`
-		HectoPascAltimeter int    `json:"hectoPascAltimeter"`
-		Humidity           int    `json:"humidity"`
-		ICAO               string `json:"ICAO"`
+		Clouds             string  `json:"clouds"`
+		CloudsCode         string  `json:"cloudsCode"`
+		CountryCode        string  `json:"countryCode"`
+		Datetime           string  `json:"datetime"`
+		DewPoint           string  `json:"dewPoint"`
+		Elevation          int     `json:"elevation"`
+		HectoPascAltimeter int     `json:"hectoPascAltimeter"`
+		Humidity           int     `json:"humidity"`
+		ICAO               string  `json:"ICAO"`
 		Lat                float64 `json:"lat"`
 		Lng                float64 `json:"lng"`
-		Observation        string `json:"observation"`
-		StationName        string `json:"stationName"`
-		Temperature        string `json:"temperature"`
-		WeatherCondition   string `json:"weatherCondition"`
-		WindDirection      int    `json:"windDirection"`
-		WindSpeed          string `json:"windSpeed"`
+		Observation        string  `json:"observation"`
+		StationName        string  `json:"stationName"`
+		Temperature        string  `json:"temperature"`
+		WeatherCondition   string  `json:"weatherCondition"`
+		WindDirection      int     `json:"windDirection"`
+		WindSpeed          string  `json:"windSpeed"`
 	} `json:"weatherObservation"`
+}
+
+type AirlineDataStruct struct {
+	AirlineID       int
+	AirlineName     string
+	AirlineAlias    string
+	AirlineIATA     string
+	AirlineICAO     string
+	AirlineCallsign string
+	AirlineCountry  string
+	AirlineActive   bool
 }

@@ -2,7 +2,11 @@
 
 [![Build Status](https://travis-ci.org/iarenzana/ft.png)](https://travis-ci.org/iarenzana/ft)
 
-Command line flight tracker
+Command line flight tracker.
+
+##Download
+
+Download the binaries for all major platforms [here] (https://github.com/iarenzana/ft/releases).
 
 ##Installation
 
@@ -16,7 +20,7 @@ You will need a [Flightaware API key] (http://flightaware.com/commercial/flightx
 
 ```
 git clone https://github.com/iarenzana/ft
-git submodule init
+go get -u
 cd ft
 go build -o ${GOPATH}/bin
 ```

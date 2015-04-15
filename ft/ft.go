@@ -48,6 +48,7 @@ func AirportInfoEval(inputAirport string) {
 	var ai airportInformation
 
 	airportIndex, err := getAirportIndex(strings.ToUpper(inputAirport))
+
 	if err != nil || airportIndex == -2 {
 		fmt.Println("Airport Unknown.")
 		return
@@ -55,6 +56,7 @@ func AirportInfoEval(inputAirport string) {
 	ai = getAirportData(airportIndex)
 	fmt.Println("Airport Name:", ai.airportName)
 	fmt.Print("Location    : ", ai.airportCity, ", ", ai.airportCountry, "\n")
+	fmt.Print("Altitude    : ", ai.airportAltitude, "ft", "\n")
 	fmt.Println("ICAO        :", ai.airportICAOCode, " IATA: ", ai.airportIATACode)
 	metar := getAirportMETAR(ai.airportICAOCode)
 	fmt.Println("METAR       :", metar)
@@ -86,6 +88,79 @@ func FlightTrackingEval(inputFlightToTrack string) {
 		fmt.Println("Route            : ", flightData.FlightInfoExResult.Flights[i].Route)
 	}
 
+}
+
+//TODO: Write test Unit
+func AirlineInfo(airlineInfo string) {
+	if _, err := os.Stat(OutputFileAirlines); os.IsNotExist(err) {
+		getStaticData()
+	}
+	if checkEnvVariables() != 0 {
+		fmt.Println("Please set the FLIGHTAWARE_API_KEY and FLIGHTAWARE_API_USER variables.")
+		os.Exit(-1)
+	}
+
+	airlineData, err := getAirlineData(airlineInfo)
+	if err != nil {
+		fmt.Println("Error getting airline data: ", err)
+		os.Exit(1)
+	}
+
+	if airlineData.AirlineID == 0 {
+		fmt.Println("Airline not found.")
+		return
+	}
+	fmt.Println("Airline Name	  : ", airlineData.AirlineName)
+	fmt.Println("ICAO              : ", airlineData.AirlineICAO, " IATA: ", airlineData.AirlineIATA)
+	fmt.Println("Airline Callsign  : ", airlineData.AirlineCallsign)
+	fmt.Println("Airline Country   : ", airlineData.AirlineCountry)
+	if airlineData.AirlineActive {
+		fmt.Println("Airline Status    :  Active")
+	} else {
+		fmt.Println("Airline Status    :  Inactive")
+	}
+}
+
+//TODO: Write test Unit
+func getAirlineData(airline string) (AirlineDataStruct, error) {
+	var airlineData AirlineDataStruct
+
+	csvfile, err := os.Open(OutputFileAirlines)
+	if err != nil {
+		fmt.Println(err)
+		return airlineData, err
+	}
+	defer csvfile.Close()
+	reader := csv.NewReader(csvfile)
+
+	reader.FieldsPerRecord = -1
+
+	rawCSVdata, err := reader.ReadAll()
+
+	if err != nil {
+		fmt.Println(err)
+		return airlineData, err
+	}
+	for _, each := range rawCSVdata {
+		code := each[4]
+
+		if code == airline {
+			airlineData.AirlineID, _ = strconv.Atoi(each[0])
+			airlineData.AirlineName = each[1]
+			airlineData.AirlineAlias = each[2]
+			airlineData.AirlineIATA = each[3]
+			airlineData.AirlineICAO = each[4]
+			airlineData.AirlineCallsign = each[5]
+			airlineData.AirlineCountry = each[6]
+			if each[7] == "Y" {
+				airlineData.AirlineActive = true
+			} else {
+				airlineData.AirlineActive = false
+			}
+		}
+	}
+
+	return airlineData, nil
 }
 
 //ValidateAirportCode - Make sure the airport code is correctly formatted -2 - Invalid code. 1 - ICAO code. 0 - IATA code.
@@ -139,6 +214,7 @@ func getAirportData(airportIndex int) airportInformation {
 			airportDataResult.airportCity = each[2]
 			airportDataResult.airportLat = lat
 			airportDataResult.airportLong = lon
+			airportDataResult.airportAltitude, _ = strconv.Atoi(each[8])
 		}
 	}
 
