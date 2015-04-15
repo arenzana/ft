@@ -1,9 +1,10 @@
 package ft
 
 import (
-	"testing"
-	"strings"
+	"fmt"
 	"os"
+	"strings"
+	"testing"
 )
 
 var airportTests = []struct {
@@ -33,19 +34,19 @@ var airportTests = []struct {
 }
 
 var FlightTests = []struct {
-	FlightID string
+	FlightID    string
 	Destination string
 }{
 	{
-		FlightID: "UA922",
+		FlightID:    "UA922",
 		Destination: "EGLL",
 	},
+	// {
+	// 	FlightID:    "AA47",
+	// 	Destination: "KORD",
+	// },
 	{
-		FlightID: "AA47",
-		Destination: "KORD",		
-	},
-	{
-		FlightID: "AF90",
+		FlightID:    "AF90",
 		Destination: "KMIA",
 	},
 }
@@ -91,8 +92,8 @@ func TestUnitValidateAirportCode(t *testing.T) {
 /*Test to get airport indexes*/
 func TestUnitGetAirportIndex(t *testing.T) {
 	for i, test := range airportTests {
-		indexICAO,_ := getAirportIndex(test.airportICAOCode)
-		indexIATA,_ := getAirportIndex(test.airportIATACode)
+		indexICAO, _ := getAirportIndex(test.airportICAOCode)
+		indexIATA, _ := getAirportIndex(test.airportIATACode)
 
 		if indexICAO == -2 || indexIATA == -2 {
 			t.Error("Error! Got ", indexICAO, "Test %d", i)
@@ -100,7 +101,7 @@ func TestUnitGetAirportIndex(t *testing.T) {
 	}
 
 	for i, ret := range fakeAirportTests {
-		res,_ := getAirportIndex(ret)
+		res, _ := getAirportIndex(ret)
 		if res != -2 {
 			t.Error("Error! Got ", res, "Test %d", i)
 		}
@@ -110,7 +111,7 @@ func TestUnitGetAirportIndex(t *testing.T) {
 /*Test to get airport data */
 func TestUnitGetAirportData(t *testing.T) {
 	var airportInfo airportInformation
-	index,_ := getAirportIndex("KJFK")
+	index, _ := getAirportIndex("KJFK")
 	airportInfo = getAirportData(index)
 	if airportInfo.airportIndex != 3797 {
 		t.Error("Error! Expected 3797 but got ", airportInfo.airportIndex)
@@ -118,10 +119,10 @@ func TestUnitGetAirportData(t *testing.T) {
 }
 
 /*Test to get airport METAR*/
-func TestUnitGetAirportMETAR(t *testing.T){
+func TestUnitGetAirportMETAR(t *testing.T) {
 	for _, test := range airportTests {
 		result := getAirportMETAR(test.airportICAOCode)
-		slices := strings.Split(result," ")
+		slices := strings.Split(result, " ")
 		firstCode := slices[0]
 		if firstCode != test.airportICAOCode {
 			t.Error("Error! First code and ICAO Code: ", firstCode, test.airportICAOCode)
@@ -134,9 +135,10 @@ func TestUnitGetFlightData(t *testing.T) {
 	var fi flightInformation
 
 	for i, test := range FlightTests {
+		fmt.Println(test.FlightID)
 		fi = getFlightData(test.FlightID)
 		if fi.FlightInfoExResult.Flights[0].Destination != test.Destination {
-			t.Error("Expected ",test.Destination, "but got ",fi.FlightInfoExResult.Flights[i].Destination, "Test %d", i)
+			t.Error("Expected ", test.Destination, "but got ", fi.FlightInfoExResult.Flights[i].Destination, "Test %d", i)
 		}
 
 	}
@@ -146,16 +148,18 @@ func TestUnitGetFlightData(t *testing.T) {
 func TestUnitGetStatisticData(t *testing.T) {
 	getStaticData()
 	if _, err := os.Stat(OutputFileRoutes); os.IsNotExist(err) {
-		t.Error("Expected file ",OutputFileRoutes)
+		t.Error("Expected file ", OutputFileRoutes)
 	}
 }
+
 /*Test to test download functionality*/
 func TestUnitDownloadFromURL(t *testing.T) {
 	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
 	if _, err := os.Stat(OutputFileRoutes); os.IsNotExist(err) {
-		t.Error("Couldn't download file ",OutputFileRoutes)
+		t.Error("Couldn't download file ", OutputFileRoutes)
 	}
 }
+
 /*Test to make sure the env variables test func works*/
-func TestUnitCheckEnvVariables( t *testing.T) {
+func TestUnitCheckEnvVariables(t *testing.T) {
 }
