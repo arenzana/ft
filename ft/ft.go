@@ -48,6 +48,7 @@ func AirportInfoEval(inputAirport string) {
 	var ai airportInformation
 
 	airportIndex, err := getAirportIndex(strings.ToUpper(inputAirport))
+
 	if err != nil || airportIndex == -2 {
 		fmt.Println("Airport Unknown.")
 		return
