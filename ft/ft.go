@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ttacon/chalk"
 )
 
 //FlightAwareBase var with the base URI for the Flight data server
@@ -50,16 +52,17 @@ func AirportInfoEval(inputAirport string) {
 	airportIndex, err := getAirportIndex(strings.ToUpper(inputAirport))
 
 	if err != nil || airportIndex == -2 {
-		fmt.Println("Airport Unknown.")
+		fmt.Println(chalk.Red, "Airport Unknown.")
 		return
 	}
 	ai = getAirportData(airportIndex)
-	fmt.Println("Airport Name:", ai.airportName)
-	fmt.Print("Location    : ", ai.airportCity, ", ", ai.airportCountry, "\n")
-	fmt.Print("Altitude    : ", ai.airportAltitude, "ft", "\n")
-	fmt.Println("ICAO        :", ai.airportICAOCode, " IATA: ", ai.airportIATACode)
 	metar := getAirportMETAR(ai.airportICAOCode)
-	fmt.Println("METAR       :", metar)
+
+	fmt.Print(chalk.Blue, "Airport Name: ", chalk.Green, ai.airportName, "\n")
+	fmt.Print(chalk.Blue, "Location    : ", chalk.Green, ai.airportCity, ", ", chalk.Green, ai.airportCountry, "\n")
+	fmt.Print(chalk.Blue, "Altitude    : ", chalk.Green, ai.airportAltitude, "ft", "\n")
+	fmt.Print(chalk.Blue, "ICAO        : ", chalk.Green, ai.airportICAOCode, chalk.Blue, " IATA: ", chalk.Green, ai.airportIATACode, "\n")
+	fmt.Print(chalk.Blue, "METAR       : ", chalk.Green, metar, "\n")
 
 }
 
@@ -71,21 +74,21 @@ func FlightTrackingEval(inputFlightToTrack string) {
 	}
 
 	if checkEnvVariables() != 0 {
-		fmt.Println("Please set the FLIGHTAWARE_API_KEY and FLIGHTAWARE_API_USER variables.")
+		fmt.Println(chalk.Red, "Please set the FLIGHTAWARE_API_KEY and FLIGHTAWARE_API_USER variables.")
 		os.Exit(-1)
 	}
 
 	flightData := getFlightData(strings.ToUpper(inputFlightToTrack))
 	for i := range flightData.FlightInfoExResult.Flights {
-		fmt.Println("Origin City      : ", flightData.FlightInfoExResult.Flights[i].OriginCity)
-		fmt.Println("Destination City : ", flightData.FlightInfoExResult.Flights[i].DestinationCity)
-		fmt.Println("Aircraft Type    : ", flightData.FlightInfoExResult.Flights[i].Aircrafttype)
+		fmt.Println(chalk.Blue, "Origin City      : ", chalk.Green, flightData.FlightInfoExResult.Flights[i].OriginCity)
+		fmt.Println(chalk.Blue, "Destination City : ", chalk.Green, flightData.FlightInfoExResult.Flights[i].DestinationCity)
+		fmt.Println(chalk.Blue, "Aircraft Type    : ", chalk.Green, flightData.FlightInfoExResult.Flights[i].Aircrafttype)
 		t2 := int64(flightData.FlightInfoExResult.Flights[i].Estimatedarrivaltime)
 		actualETA := time.Unix(t2, 0)
 
-		fmt.Println("Filed Arrival    : ", flightData.FlightInfoExResult.Flights[i].FiledEte)
-		fmt.Println("Scheduled Arrival: ", actualETA)
-		fmt.Println("Route            : ", flightData.FlightInfoExResult.Flights[i].Route)
+		fmt.Println(chalk.Blue, "Filed Arrival    : ", chalk.Green, flightData.FlightInfoExResult.Flights[i].FiledEte)
+		fmt.Println(chalk.Blue, "Scheduled Arrival: ", chalk.Green, actualETA)
+		fmt.Println(chalk.Blue, "Route            : ", chalk.Green, flightData.FlightInfoExResult.Flights[i].Route)
 	}
 
 }
@@ -96,28 +99,28 @@ func AirlineInfo(airlineInfo string) {
 		getStaticData()
 	}
 	if checkEnvVariables() != 0 {
-		fmt.Println("Please set the FLIGHTAWARE_API_KEY and FLIGHTAWARE_API_USER variables.")
+		fmt.Println(chalk.Red, "Please set the FLIGHTAWARE_API_KEY and FLIGHTAWARE_API_USER variables.")
 		os.Exit(-1)
 	}
 
 	airlineData, err := getAirlineData(airlineInfo)
 	if err != nil {
-		fmt.Println("Error getting airline data: ", err)
+		fmt.Println(chalk.Red, "Error getting airline data: ", err)
 		os.Exit(1)
 	}
 
 	if airlineData.AirlineID == 0 {
-		fmt.Println("Airline not found.")
+		fmt.Println(chalk.Red, "Airline not found.")
 		return
 	}
-	fmt.Println("Airline Name	  : ", airlineData.AirlineName)
-	fmt.Println("ICAO              : ", airlineData.AirlineICAO, " IATA: ", airlineData.AirlineIATA)
-	fmt.Println("Airline Callsign  : ", airlineData.AirlineCallsign)
-	fmt.Println("Airline Country   : ", airlineData.AirlineCountry)
+	fmt.Println(chalk.Blue, "Airline Name	   : ", chalk.Green, airlineData.AirlineName)
+	fmt.Println(chalk.Blue, "ICAO              : ", chalk.Green, airlineData.AirlineICAO, " IATA: ", airlineData.AirlineIATA)
+	fmt.Println(chalk.Blue, "Airline Callsign  : ", chalk.Green, airlineData.AirlineCallsign)
+	fmt.Println(chalk.Blue, "Airline Country   : ", chalk.Green, airlineData.AirlineCountry)
 	if airlineData.AirlineActive {
-		fmt.Println("Airline Status    :  Active")
+		fmt.Println(chalk.Blue, "Airline Status    : ", chalk.Green, "Active")
 	} else {
-		fmt.Println("Airline Status    :  Inactive")
+		fmt.Println(chalk.Blue, "Airline Status    : ", chalk.Green, "Inactive")
 	}
 }
 
@@ -127,7 +130,7 @@ func getAirlineData(airline string) (AirlineDataStruct, error) {
 
 	csvfile, err := os.Open(OutputFileAirlines)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(chalk.Red, err)
 		return airlineData, err
 	}
 	defer csvfile.Close()
@@ -187,7 +190,7 @@ func getAirportData(airportIndex int) airportInformation {
 
 	csvfile, err := os.Open(OutputFileAirports)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(chalk.Red, err)
 		os.Exit(-1)
 	}
 	defer csvfile.Close()
@@ -227,7 +230,7 @@ Get index of an airport code so we can gather all the data by index
 func getAirportIndex(airportCode string) (int, error) {
 	csvfile, err := os.Open(OutputFileAirports)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(chalk.Red, err)
 		return -2, err
 	}
 	defer csvfile.Close()
@@ -259,7 +262,7 @@ func getAirportMETAR(airportICAOCode string) string {
 
 	resp, err := http.Get(METARURL)
 	if err != nil {
-		fmt.Printf("error %v", err)
+		fmt.Println(chalk.Red, "Error getting METAR!")
 		os.Exit(-1)
 	}
 	defer resp.Body.Close()
@@ -271,7 +274,7 @@ func getAirportMETAR(airportICAOCode string) string {
 
 	err2 := json.Unmarshal([]byte(string(data)), &met)
 	if err2 != nil {
-		fmt.Println("Error parsing data! ", err2)
+		fmt.Println(chalk.Red, "Error parsing data! ", err2)
 		os.Exit(-1)
 	}
 	return met.WeatherObservation.Observation
@@ -292,7 +295,7 @@ func getFlightData(flightNumber string) flightInformation {
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	err = json.Unmarshal([]byte(string(bodyText)), &flightInfo)
 	if err != nil {
-		fmt.Println("Ha petao! ", err)
+		fmt.Println(chalk.Red, "Error parsing data! ", err)
 		os.Exit(-1)
 	}
 
@@ -328,21 +331,21 @@ func downloadFromURL(url string, fileName string) {
 	output, err := os.Create(filepath.FromSlash(fileName))
 
 	if err != nil {
-		fmt.Println("Error while creating", fileName, "-", err)
+		fmt.Println(chalk.Red, "Error while creating", fileName, "-", err)
 		return
 	}
 	defer output.Close()
 
 	response, err := http.Get(url)
 	if err != nil {
-		fmt.Println("Error while downloading", url, "-", err)
+		fmt.Println(chalk.Red, "Error while downloading", url, "-", err)
 		return
 	}
 	defer response.Body.Close()
 
 	bytesRead, err := io.Copy(output, response.Body)
 	if err != nil {
-		fmt.Println("Error while downloading", url, "-", err)
+		fmt.Println(chalk.Red, "Error while downloading", url, "-", err)
 		return
 	}
 	_ = bytesRead
