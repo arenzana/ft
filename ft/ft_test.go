@@ -1,7 +1,6 @@
 package ft
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -135,7 +134,6 @@ func TestUnitGetFlightData(t *testing.T) {
 	var fi flightInformation
 
 	for i, test := range FlightTests {
-		fmt.Println(test.FlightID)
 		fi = getFlightData(test.FlightID)
 		if fi.FlightInfoExResult.Flights[0].Destination != test.Destination {
 			t.Error("Expected ", test.Destination, "but got ", fi.FlightInfoExResult.Flights[i].Destination, "Test %d", i)

@@ -60,3 +60,4 @@ GLOBAL OPTIONS:
 * [cli] (https://github.com/codegangsta/cli) - Allows me to create a command line application super fast.
 * [pb] (https://github.com/cheggaaa/pb) - For progress bars.
 * [gox] (https://github.com/mitchellh/gox) - To compile the code for several architectures.
+* [chalk](https://github.com/ttacon/chalk) - To make the output look pretty.
