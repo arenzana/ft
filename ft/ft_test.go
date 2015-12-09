@@ -152,12 +152,8 @@ func TestUnitGetStatisticData(t *testing.T) {
 
 /*Test to test download functionality*/
 func TestUnitDownloadFromURL(t *testing.T) {
-	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
+	downloadFromURL("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat", OutputFileRoutes)
 	if _, err := os.Stat(OutputFileRoutes); os.IsNotExist(err) {
 		t.Error("Couldn't download file ", OutputFileRoutes)
 	}
-}
-
-/*Test to make sure the env variables test func works*/
-func TestUnitCheckEnvVariables(t *testing.T) {
 }
