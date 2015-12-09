@@ -60,7 +60,7 @@ func AirportInfoEval(inputAirport string) {
 
 	fmt.Print(chalk.Blue, "Airport Name: ", chalk.Green, ai.airportName, "\n")
 	fmt.Print(chalk.Blue, "Location    : ", chalk.Green, ai.airportCity, ", ", chalk.Green, ai.airportCountry, "\n")
-	fmt.Print(chalk.Blue, "Altitude    : ", chalk.Green, ai.airportAltitude, "ft", "\n")
+	fmt.Print(chalk.Blue, "Altitude    :", chalk.Green, ai.airportAltitude, "ft", "\n")
 	fmt.Print(chalk.Blue, "ICAO        : ", chalk.Green, ai.airportICAOCode, chalk.Blue, " IATA: ", chalk.Green, ai.airportIATACode, "\n")
 	fmt.Print(chalk.Blue, "METAR       : ", chalk.Green, metar, "\n")
 
@@ -316,9 +316,9 @@ Download data from openflights.org to not make much use of the FlightAware API (
 */
 func getStaticData() int {
 	os.MkdirAll(BaseDir, 0777)
-	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airports.dat?format=raw", OutputFileAirports)
-	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/airlines.dat?format=raw", OutputFileAirlines)
-	downloadFromURL("http://sourceforge.net/p/openflights/code/HEAD/tree/openflights/data/routes.dat?format=raw", OutputFileRoutes)
+	downloadFromURL("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat", OutputFileAirports)
+	downloadFromURL("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airlines.dat", OutputFileAirlines)
+	downloadFromURL("https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat", OutputFileRoutes)
 	return 0
 }
 
