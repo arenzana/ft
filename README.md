@@ -4,7 +4,7 @@
 
 Command line flight tracker.
 
-![CAPTURE](https://raw.githubusercontent.com/iarenzana/iarenzana.github.io/master/assets/images/capture.png)
+![CAPTURE](https://raw.githubusercontent.com/iarenzana/ft/master/assets/images/capture.png)
 
 ##Download
 
