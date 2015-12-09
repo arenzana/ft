@@ -38,7 +38,7 @@ var FlightTests = []struct {
 }{
 	{
 		FlightID:    "UA922",
-		Destination: "EGLL",
+		Destination: "KEWR",
 	},
 	// {
 	// 	FlightID:    "AA47",
@@ -136,7 +136,7 @@ func TestUnitGetFlightData(t *testing.T) {
 	for i, test := range FlightTests {
 		fi = getFlightData(test.FlightID)
 		if fi.FlightInfoExResult.Flights[0].Destination != test.Destination {
-			t.Error("Expected ", test.Destination, "but got ", fi.FlightInfoExResult.Flights[i].Destination, "Test %d", i)
+			t.Error("Expected ", test.Destination, "but got ", fi.FlightInfoExResult.Flights[i].Destination, "Test: ", i)
 		}
 
 	}
@@ -156,4 +156,8 @@ func TestUnitDownloadFromURL(t *testing.T) {
 	if _, err := os.Stat(OutputFileRoutes); os.IsNotExist(err) {
 		t.Error("Couldn't download file ", OutputFileRoutes)
 	}
+}
+
+/*Test to make sure the env variables test func works*/
+func TestUnitCheckEnvVariables(t *testing.T) {
 }
