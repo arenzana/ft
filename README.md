@@ -4,6 +4,8 @@
 
 Command line flight tracker.
 
+![CAPTURE](https://raw.githubusercontent.com/iarenzana/iarenzana.github.io/master/assets/images/capture.png)
+
 ##Download
 
 Download the binaries for all major platforms [here] (https://github.com/iarenzana/ft/releases).
