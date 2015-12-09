@@ -60,7 +60,7 @@ func AirportInfoEval(inputAirport string) {
 
 	fmt.Print(chalk.Blue, "Airport Name: ", chalk.Green, ai.airportName, "\n")
 	fmt.Print(chalk.Blue, "Location    : ", chalk.Green, ai.airportCity, ", ", chalk.Green, ai.airportCountry, "\n")
-	fmt.Print(chalk.Blue, "Altitude    :", chalk.Green, ai.airportAltitude, "ft", "\n")
+	fmt.Print(chalk.Blue, "Altitude    : ", chalk.Green, strings.TrimSpace(strconv.Itoa(ai.airportAltitude)), "ft", "\n")
 	fmt.Print(chalk.Blue, "ICAO        : ", chalk.Green, ai.airportICAOCode, chalk.Blue, " IATA: ", chalk.Green, ai.airportIATACode, "\n")
 	fmt.Print(chalk.Blue, "METAR       : ", chalk.Green, metar, "\n")
 
