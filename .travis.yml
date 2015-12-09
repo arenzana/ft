@@ -10,6 +10,7 @@ branches:
 install: 
     - go get
     - go build -o ft_bin
+    - go run main.go a LEMD
 
 env:
   global:
